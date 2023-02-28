@@ -1,12 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alessio's Portofolio</title>
-</head>
-<body>
-    <h1></h1>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Alessio's Portofolio</title>
+        <style>
+            * {
+                padding: 0px;
+                margin: 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            let worldSize = 500;
+            let pSize = 75;
+            let x = worldSize / 2 - pSize / 2;
+            let y = worldSize / 2 - pSize / 2;
+            let dx = 2;
+            let dy = 2;
+            let dx2 = -1;
+            let dy2 = -1;
+            
+            let x2 = worldSize / 2 - pSize / 2;
+            let y2 = worldSize / 2 - pSize / 2;
+
+            class Player {
+                constructor(posX, posY, ctx) {
+                    this.posX = posX;
+                    this.posY = posY;
+                    this.ctx = ctx
+                    console.log("dsfaaaaaaaaaa");
+                }
+            }
+
+            var main = document.createElement("canvas");
+            main.width = 500;
+            main.height = 500;
+            main.style.cssText = `
+                display: block;
+                background-color: #eee;
+                overflow: hidden;`;
+            main.id = "myCanvas";
+            document.querySelector("body").append(main);
+
+
+            var ctx = main.getClientRects("2d");
+
+            var a = new Player(1, 1)
+
+
+            // var ctx = main.getContext("2d");
+            // ctx.fillStyle = "#0095DD";
+            // ctx.fillRect(x, y, pSize, pSize);            
+
+            // function renderPlayer() {
+            //     ctx.beginPath();
+            //     ctx.rect(x, y, pSize, pSize);
+            //     ctx.fillStyle = "#0095DD";
+            //     ctx.fill();
+            //     ctx.closePath();
+            //     setTimeout(() => {
+            //         refreshPlayer();
+            //     }, 16);
+            // }
+
+            // var ctx2 = main.getContext("2d");
+            // ctx2.fillStyle = "#0095DD";
+            // ctx2.fillRect(x2, y2, pSize, pSize);
+            // function renderPlayer2() {
+                
+            // ctx2.fillRect(x2, y2, pSize, pSize);
+            //     setTimeout(() => {
+            //         refreshPlayer2();
+            //     }, 16);
+            // }
+            // function refreshPlayer2() {
+            //     ctx2.clearRect(x2 - 1, y2 - 1, x2 + pSize + 1, y2 + pSize + 1);
+            //     x2 += dx2;
+            //     y2 += dy2;
+            //     renderPlayer2();
+            // }
+
+            // function refreshPlayer() {
+            //     ctx.clearRect(x - 1, y - 1, x + pSize + 1, y + pSize + 1);
+            //     x += dx;
+            //     y += dy;
+            //     renderPlayer();
+            // }
+
+
+            main.onclick = function (e) {
+                calculatePos();
+                renderPlayer();
+                // renderPlayer2();
+                ctx.fillRect(e.x - pSize / 2, e.y - pSize / 2, pSize, pSize);
+                // document.documentElement.scrollLeft += 30;
+                // console.log("scroll location:", window.scrollX, window.scrollY);
+                console.log("mouse location:", e.x, e.y);
+            };
+            function scroll(x, y) {
+                window.scrollTo(x, y);
+            }
+
+            function calculatePos() {
+                console.log(x);
+            }
+        </script>
+    </body>
 </html>
