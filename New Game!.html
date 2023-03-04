@@ -14,30 +14,110 @@
     </head>
     <body>
         <script>
-            let worldSize = 500;
-            let pSize = 75;
-            let x = worldSize / 2 - pSize / 2;
-            let y = worldSize / 2 - pSize / 2;
-            let dx = 2;
-            let dy = 2;
-            let dx2 = -1;
-            let dy2 = -1;
-            
-            let x2 = worldSize / 2 - pSize / 2;
-            let y2 = worldSize / 2 - pSize / 2;
+            let worldSize = 800;
+            let defaultPlayerSize = 75;
+            let x = worldSize / 2;
+            let y = worldSize / 2;
 
             class Player {
-                constructor(posX, posY, ctx) {
-                    this.posX = posX;
-                    this.posY = posY;
-                    this.ctx = ctx
-                    console.log("dsfaaaaaaaaaa");
+                constructor(posX, posY, size, main) {
+                    this.size = size
+                    this.posX = posX - this.size / 2;
+                    this.posY = posY - this.size / 2;
+                    this.moveX = 0
+                    this.moveY =0
+                    this.dx = 2;
+                    this.dy =2
+                    this.ctx = main.getContext("2d");
+                    this.ctx.fillStyle = "blue";
+                    this.interval=null
+
+                    this.up = false;
+                    this.left = false;
+                    this.right = false;
+                    this.down = false;
+
+                    document.onkeydown = function (event) {
+                        if (event.keyCode === 87) {
+                            // this.up = true;
+                            // console.log("UP");
+                            this.moveY = 1
+                        }
+                        if (event.keyCode === 65) {
+                            // this.left = true;
+                            this.moveX = -1
+
+                        }
+                        if (event.keyCode === 86) {
+                            // this.right = true;
+                            this.moveX = 1
+                        }
+                        if (event.keyCode === 83) {
+                            // this.down = true;
+                            this.moveY = -1
+                        }
+                    };
+
+                    document.onkeyup = function (event) {
+                        if (event.keyCode === 87) {
+                            // this.up = false;
+                            this.moveY = 0
+                            console.log("UP");
+                        }
+                        if (event.keyCode === 65) {
+                            this.left = false;
+                            this.moveX = 0
+
+                        }
+                        if (event.keyCode === 86) {
+                            // this.right = false;
+                            this.moveX = 0
+
+                        }
+                        if (event.keyCode === 83) {
+                            this.down = false;
+                            this.moveY = 0
+
+                        }
+                    };
+                    clearInterval(this.interval);
+                    // this.interval = setInterval(this.render, 200)
+                }
+
+
+                place() {
+                    this.ctx.fillRect(this.posX, this.posY, this.size, this.size);
+                }
+                place(a, b, c, d) {
+                    this.ctx.fillRect(a, b,c,d)
+                }
+
+                remove() {
+                    this.ctx.clearRect(this.posX-1, this.posY-1, this.size + 1, this.size + 1);
+                }
+                
+                render() {
+                    if (this.up) {
+                        this.y += this.dy
+                    }
+                    if (this.left) {
+                        this.x -= this.dx;
+                    }
+                    if (this.right) {
+                        this.x += this.dx;
+                    }
+                    if (this.down) {
+                        this.y -= this.dy;
+                    }
+                    this.remove()
+                    this.place()
+                    // this.render();
                 }
             }
 
             var main = document.createElement("canvas");
-            main.width = 500;
-            main.height = 500;
+            main.width = worldSize;
+            main.height = worldSize;
             main.style.cssText = `
                 display: block;
                 background-color: #eee;
@@ -45,15 +125,12 @@
             main.id = "myCanvas";
             document.querySelector("body").append(main);
 
-
-            var ctx = main.getClientRects("2d");
-
-            var a = new Player(1, 1)
-
+            var mc = new Player(x, y, defaultPlayerSize, main);
+            mc.render();
 
             // var ctx = main.getContext("2d");
-            // ctx.fillStyle = "#0095DD";
-            // ctx.fillRect(x, y, pSize, pSize);            
+            // ctx.fillStyle = "blue";
+            // ctx.fillRect(x, y, pSize, pSize);
 
             // function renderPlayer() {
             //     ctx.beginPath();
@@ -66,47 +143,51 @@
             //     }, 16);
             // }
 
-            // var ctx2 = main.getContext("2d");
-            // ctx2.fillStyle = "#0095DD";
-            // ctx2.fillRect(x2, y2, pSize, pSize);
-            // function renderPlayer2() {
-                
-            // ctx2.fillRect(x2, y2, pSize, pSize);
-            //     setTimeout(() => {
-            //         refreshPlayer2();
-            //     }, 16);
-            // }
-            // function refreshPlayer2() {
-            //     ctx2.clearRect(x2 - 1, y2 - 1, x2 + pSize + 1, y2 + pSize + 1);
-            //     x2 += dx2;
-            //     y2 += dy2;
-            //     renderPlayer2();
-            // }
-
-            // function refreshPlayer() {
+            // function refreshPlayer(direction) {
             //     ctx.clearRect(x - 1, y - 1, x + pSize + 1, y + pSize + 1);
             //     x += dx;
             //     y += dy;
             //     renderPlayer();
             // }
 
+            // var ctx2 = main.getContext("2d");
+            // ctx2.fillStyle = "#0095DD";
+            // ctx2.fillRect(x2, y2, pSize, pSize);
+            // function renderPlayer2() {
+
+            // ctx2.fillRect(x2, y2, pSize, pSize);
+            //     setTimeout(() => {
+            //         refreshPlayer2();
+            //     }, 16);
+            // }
+            // // function refreshPlayer2() {
+            // //     ctx2.clearRect(x2 - 1, y2 - 1, x2 + pSize + 1, y2 + pSize + 1);
+            // //     x2 += dx2;
+            // //     y2 += dy2;
+            // //     renderPlayer2();
+            // // }
 
             main.onclick = function (e) {
-                calculatePos();
-                renderPlayer();
+                // calculatePos();
+                // renderPlayer();
                 // renderPlayer2();
-                ctx.fillRect(e.x - pSize / 2, e.y - pSize / 2, pSize, pSize);
+                mc.place(e.x - mc.size / 2, e.y - mc.size / 2, mc.size, mc.size);
                 // document.documentElement.scrollLeft += 30;
                 // console.log("scroll location:", window.scrollX, window.scrollY);
                 console.log("mouse location:", e.x, e.y);
-            };
-            function scroll(x, y) {
-                window.scrollTo(x, y);
-            }
+                mc.remove()
 
-            function calculatePos() {
-                console.log(x);
-            }
+            };
+            // function scroll(x, y) {
+            //     window.scrollTo(x, y);
+            // }
+
+            // function calculatePos() {
+            //     console.log(x);
+            // }
+            // document.addEventListener("keydown", (event) => {
+            //     console.log(event)
+            // });
         </script>
     </body>
 </html>
