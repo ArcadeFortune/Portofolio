@@ -14,9 +14,10 @@
     </head>
     <body>
         <script>
-            let defaultWorldSize = 600;
+            let defaultWorldSize = 7600;
             let defaultPlayerSize = 75;
             let defaultPlayerSpeed = 8;
+            let enablePlayerControl = false;
             let tickId = null;
 
             class Player {
@@ -92,13 +93,17 @@
                     );
                 }
                 checkIfArrived() {
-                    let tolerance = 5
-                    if (this.posX > this.sollX -tolerance && this.posX < this.sollX +tolerance && this.posY > this.sollY -tolerance && this.posY < this.sollY +tolerance){
-                        return true
+                    let tolerance = 5;
+                    if (
+                        this.posX > this.sollX - tolerance &&
+                        this.posX < this.sollX + tolerance &&
+                        this.posY > this.sollY - tolerance &&
+                        this.posY < this.sollY + tolerance
+                    ) {
+                        return true;
                     } else {
-                        return false
+                        return false;
                     }
-
                 }
 
                 halt() {
@@ -133,6 +138,9 @@
                 }
             }
 
+            class Popup {
+                constructor() {}
+            }
             var ow = new OverWorld(defaultWorldSize);
             var p = new Player(
                 defaultWorldSize / 2,
@@ -141,7 +149,7 @@
                 defaultPlayerSpeed,
                 ow.map
             ); //spawn player in the middle of the map
-            p.placeNow()
+            p.placeNow();
 
             function tick() {
                 p.render();
@@ -151,14 +159,14 @@
             tickId = setInterval(tick, 32);
 
             ow.map.onclick = function (e) {
-                p.goTo(e.x - p.size / 2, e.y - p.size / 2);
+                p.goTo(
+                    e.x - p.size / 2 + window.scrollX,
+                    e.y - p.size / 2 + window.scrollY
+                );
                 // p.place(e.x - p.size / 2, e.y - p.size / 2, p.size, p.size);
                 // console.log("scroll location:", window.scrollX, window.scrollY);
                 // console.log("mouse location:", e.x, e.y);
             };
-            // function scroll(x, y) {
-            //     window.scrollTo(x, y);
-            // }
             document.onkeydown = function (event) {
                 p.halt();
             };
