@@ -14,7 +14,7 @@
     </head>
     <body>
         <script>
-            let defaultWorldSize = 7600;
+            let defaultWorldSize = 9602;
             let defaultPlayerSize = 75;
             let defaultPlayerSpeed = 8;
             let enablePlayerControl = false;
@@ -92,6 +92,15 @@
                         this.size + 2
                     );
                 }
+
+                center() {
+                    window.scroll({
+                        top: p.posY - window.innerHeight / 2 + p.size / 2,
+                        left: p.posX - window.innerWidth / 2 + p.size / 2,
+                        behavior: "smooth",
+                    });
+                }
+
                 checkIfArrived() {
                     let tolerance = 5;
                     if (
@@ -113,11 +122,16 @@
 
                 render() {
                     if (this.checkIfArrived()) {
+                        //player cant move
                     } else {
                         this.remove();
 
                         this.posX += this.directionX * this.speed;
                         this.posY += this.directionY * this.speed;
+                        document.documentElement.scrollLeft +=
+                            this.directionX * this.speed;
+                        document.documentElement.scrollTop +=
+                            this.directionY * this.speed;
 
                         this.placeNow();
                     }
@@ -139,7 +153,11 @@
             }
 
             class Popup {
-                constructor() {}
+                constructor(map) {
+                    this.ctx = map.getContext("2d");
+                    this.ctx.fillStyle = "red";
+                    this.ctx.fillRect(1, 1, 20, 20);
+                }
             }
             var ow = new OverWorld(defaultWorldSize);
             var p = new Player(
@@ -150,6 +168,7 @@
                 ow.map
             ); //spawn player in the middle of the map
             p.placeNow();
+            p.center();
 
             function tick() {
                 p.render();
@@ -167,11 +186,10 @@
                 // console.log("scroll location:", window.scrollX, window.scrollY);
                 // console.log("mouse location:", e.x, e.y);
             };
-            document.onkeydown = function (event) {
-                p.halt();
-            };
+            document.onkeydown = function (event) {};
             ////////////////////// TODO //////////////////////
-            //:D
+            //popup
+            //gui - esc
         </script>
     </body>
 </html>
