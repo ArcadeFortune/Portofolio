@@ -14,119 +14,96 @@
     </head>
     <body>
         <script>
-            let worldSize = 800;
+            let worldSize = 9600;
             let defaultPlayerSize = 75;
             let x = worldSize / 2;
             let y = worldSize / 2;
+            let tickId = null;
 
             class Player {
-                constructor(posX, posY, size, main) {
-                    this.size = size
+                constructor(posX, posY, size, map) {
+                    this.size = size;
                     this.posX = posX - this.size / 2;
                     this.posY = posY - this.size / 2;
-                    this.moveX = 0
-                    this.moveY =0
-                    this.dx = 2;
-                    this.dy =2
-                    this.ctx = main.getContext("2d");
+                    this.speed = 3;
+                    this.ctx = map.getContext("2d");
                     this.ctx.fillStyle = "blue";
-                    this.interval=null
 
                     this.up = false;
                     this.left = false;
                     this.right = false;
                     this.down = false;
-
-                    document.onkeydown = function (event) {
-                        if (event.keyCode === 87) {
-                            // this.up = true;
-                            // console.log("UP");
-                            this.moveY = 1
-                        }
-                        if (event.keyCode === 65) {
-                            // this.left = true;
-                            this.moveX = -1
-
-                        }
-                        if (event.keyCode === 86) {
-                            // this.right = true;
-                            this.moveX = 1
-                        }
-                        if (event.keyCode === 83) {
-                            // this.down = true;
-                            this.moveY = -1
-                        }
-                    };
-
-                    document.onkeyup = function (event) {
-                        if (event.keyCode === 87) {
-                            // this.up = false;
-                            this.moveY = 0
-                            console.log("UP");
-                        }
-                        if (event.keyCode === 65) {
-                            this.left = false;
-                            this.moveX = 0
-
-                        }
-                        if (event.keyCode === 86) {
-                            // this.right = false;
-                            this.moveX = 0
-
-                        }
-                        if (event.keyCode === 83) {
-                            this.down = false;
-                            this.moveY = 0
-
-                        }
-                    };
-                    clearInterval(this.interval);
-                    // this.interval = setInterval(this.render, 200)
                 }
 
-
-                place() {
-                    this.ctx.fillRect(this.posX, this.posY, this.size, this.size);
+                placeNow() {
+                    this.ctx.fillRect(
+                        this.posX,
+                        this.posY,
+                        this.size,
+                        this.size
+                    );
                 }
                 place(a, b, c, d) {
-                    this.ctx.fillRect(a, b,c,d)
+                    this.ctx.fillRect(a, b, c, d);
                 }
 
                 remove() {
-                    this.ctx.clearRect(this.posX-1, this.posY-1, this.size + 1, this.size + 1);
+                    this.ctx.clearRect(
+                        this.posX - 1,
+                        this.posY - 1,
+                        this.size + 2,
+                        this.size + 1
+                    );
                 }
-                
+
                 render() {
+                    // console.log(this.down)
+                    this.remove()
                     if (this.up) {
-                        this.y += this.dy
+                        this.posY -= this.speed;
                     }
                     if (this.left) {
-                        this.x -= this.dx;
+                        this.posX -= this.speed;
                     }
                     if (this.right) {
-                        this.x += this.dx;
+                        this.posX += this.speed;
                     }
                     if (this.down) {
-                        this.y -= this.dy;
+                        this.posY += this.speed;
                     }
-                    this.remove()
-                    this.place()
+                    this.placeNow();
                     // this.render();
                 }
             }
 
-            var main = document.createElement("canvas");
-            main.width = worldSize;
-            main.height = worldSize;
-            main.style.cssText = `
-                display: block;
-                background-color: #eee;
-                overflow: hidden;`;
-            main.id = "myCanvas";
-            document.querySelector("body").append(main);
+            class OverWorld {
+                constructor() {
+                    this.map = document.createElement("canvas");
 
-            var mc = new Player(x, y, defaultPlayerSize, main);
-            mc.render();
+                    this.map.width = worldSize;
+                    this.map.height = worldSize;
+                    this.map.style.cssText = `
+                        display: block;
+                        background-color: #eee;
+                        overflow: hidden;
+                    `;
+                }
+                buildMap() {
+                    document.querySelector("body").append(this.map);
+                }
+            }
+
+            var ow = new OverWorld();
+            var p = new Player(x, y, defaultPlayerSize, ow.map);
+            ow.buildMap();
+
+            function tick() {
+                p.render();
+            }
+
+            clearInterval(tickId);
+            tickId = setInterval(tick, 32);
+            p.placeNow();
 
             // var ctx = main.getContext("2d");
             // ctx.fillStyle = "blue";
@@ -167,16 +144,45 @@
             // //     renderPlayer2();
             // // }
 
-            main.onclick = function (e) {
+            document.onkeydown = function (event) {
+                if (event.keyCode === 87) {
+                    p.up = true;
+                }
+                if (event.keyCode === 65) {
+                    p.left = true;
+                }
+                if (event.keyCode === 83) {
+                    p.down = true;
+                }
+                if (event.keyCode === 68) {
+                    p.right = true;
+                }
+            };
+
+            document.onkeyup = function (event) {
+                if (event.keyCode === 87) {
+                    p.up = false;
+                }
+                if (event.keyCode === 65) {
+                    p.left = false;
+                }
+                if (event.keyCode === 83) {
+                    p.down = false;
+                }
+                if (event.keyCode === 68) {
+                    p.right = false;
+                }
+            };
+            ow.map.onclick = function (e) {
                 // calculatePos();
                 // renderPlayer();
                 // renderPlayer2();
-                mc.place(e.x - mc.size / 2, e.y - mc.size / 2, mc.size, mc.size);
-                // document.documentElement.scrollLeft += 30;
+                p.place(e.x - p.size / 2, e.y - p.size / 2, p.size, p.size);
+                document.documentElement.scrollLeft = x - 800;
+                document.documentElement.scrollTop = y-800;
                 // console.log("scroll location:", window.scrollX, window.scrollY);
-                console.log("mouse location:", e.x, e.y);
-                mc.remove()
-
+                console.log("mouse location:", e.x, e.y, "\nup:", p.up);
+                p.remove();
             };
             // function scroll(x, y) {
             //     window.scrollTo(x, y);
