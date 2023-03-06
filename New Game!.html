@@ -17,7 +17,7 @@
             let defaultWorldSize = 9602;
             let defaultPlayerSize = 75;
             let defaultPlayerSpeed = 8;
-            let enablePlayerControl = false;
+            let enablePlayerControl = true;
             let tickId = null;
 
             class Player {
@@ -123,12 +123,13 @@
                 }
 
                 halt() {
+                    enablePlayerControl = false;
                     this.directionX = 0;
                     this.directionY = 0;
                 }
 
                 render() {
-                    if (this.checkIfArrived()) {
+                    if (this.checkIfArrived() || !enablePlayerControl) {
                         //player cant move
                     } else {
                         this.remove();
@@ -161,10 +162,12 @@
                     this.ui = document.createElement("div");
                     this.pausedText = document.createElement("div");
                     this.leave = document.createElement("div");
+                    this.return = document.createElement("div");
                 }
                 pause() {
                     p.halt();
                     p.centerSmooth();
+
                     //main screen
                     this.ui.style.cssText = `
                         width: ${window.innerWidth/3*2+p.size}px;
@@ -205,8 +208,28 @@
                         `;
                     this.ui.append(this.leave)
 
+                    //return button
+                    this.return.style.cssText = `
+                        width: ${parseFloat(this.ui.style.width)/2.5}px;
+                        height:${parseFloat(this.ui.style.height)/2.5}px;
+                        background: rgba(0,0,0,0);
+                        border:1px solid black;
+                        position: absolute;
+                        top: 0px;
+                        right: 0px;
+                        z-index: 2;
+                        cursor: pointer;
+                        `;
+                    this.return.onclick = function () {
+                        this.return();
+                    }
+                    this.ui.append(this.return)
+
 
                     document.querySelector("body").append(this.ui);
+                }
+                return() {
+
                 }
             }
             var ow = new OverWorld(defaultWorldSize);
