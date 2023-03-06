@@ -94,6 +94,13 @@
                 }
 
                 center() {
+                    document.documentElement.scrollLeft +=
+                        this.directionX * this.speed;
+                    document.documentElement.scrollTop +=
+                        this.directionY * this.speed;
+                }
+
+                centerSmooth() {
                     window.scroll({
                         top: p.posY - window.innerHeight / 2 + p.size / 2,
                         left: p.posX - window.innerWidth / 2 + p.size / 2,
@@ -128,11 +135,8 @@
 
                         this.posX += this.directionX * this.speed;
                         this.posY += this.directionY * this.speed;
-                        document.documentElement.scrollLeft +=
-                            this.directionX * this.speed;
-                        document.documentElement.scrollTop +=
-                            this.directionY * this.speed;
 
+                        // this.center();
                         this.placeNow();
                     }
                 }
@@ -153,13 +157,60 @@
             }
 
             class Popup {
-                constructor(map) {
-                    this.ctx = map.getContext("2d");
-                    this.ctx.fillStyle = "red";
-                    this.ctx.fillRect(1, 1, 20, 20);
+                constructor() {
+                    this.ui = document.createElement("div");
+                    this.pausedText = document.createElement("div");
+                    this.leave = document.createElement("div");
+                }
+                pause() {
+                    p.halt();
+                    p.centerSmooth();
+                    //main screen
+                    this.ui.style.cssText = `
+                        width: ${window.innerWidth/3*2+p.size}px;
+                        height:${window.innerHeight/3*2+p.size}px;
+                        background: rgba(0,0,0,0);
+                        border:1px solid black;
+                        color: black;
+                        position: absolute;
+                        top: ${p.posY-window.innerHeight/3}px;
+                        left: ${p.posX-window.innerWidth/3}px;
+                    `;
+
+                    //paused text
+                    this.pausedText.style.cssText = `
+                        width: ${100}%;
+                        height:${100}px;
+                        font-size: 100px;
+                        text-align: center;
+                        background: rgba(255,0,0,00);
+                        border:0px solid black;
+                        position: absolute;
+                        top: ${parseFloat(this.ui.style.height)/5.5}px;
+                        left: 0px;
+                    `
+                    this.pausedText.innerHTML = "PAUSED"
+                    this.ui.append(this.pausedText)
+
+                    //leave button
+                    this.leave.style.cssText = `
+                        width: ${parseFloat(this.ui.style.width)/2.5}px;
+                        height:${parseFloat(this.ui.style.height)/2.5}px;
+                        background: rgba(0,0,0,0);
+                        border:1px solid black;
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+                        z-index: 2;
+                        `;
+                    this.ui.append(this.leave)
+
+
+                    document.querySelector("body").append(this.ui);
                 }
             }
             var ow = new OverWorld(defaultWorldSize);
+            var pop = new Popup();
             var p = new Player(
                 defaultWorldSize / 2,
                 defaultWorldSize / 2,
@@ -168,7 +219,7 @@
                 ow.map
             ); //spawn player in the middle of the map
             p.placeNow();
-            p.center();
+            p.centerSmooth();
 
             function tick() {
                 p.render();
@@ -186,7 +237,9 @@
                 // console.log("scroll location:", window.scrollX, window.scrollY);
                 // console.log("mouse location:", e.x, e.y);
             };
-            document.onkeydown = function (event) {};
+            document.onkeydown = function (event) {
+                pop.pause();
+            };
             ////////////////////// TODO //////////////////////
             //popup
             //gui - esc
