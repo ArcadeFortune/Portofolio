@@ -163,6 +163,11 @@
                     this.pausedText = document.createElement("div");
                     this.leave = document.createElement("div");
                     this.return = document.createElement("div");
+                    this.zoomId = null;
+
+                    this.zoomSpeed = 0.02;
+                    this.maxZoom = 1.2;
+                    this.currentZoom = 1;
                 }
                 pause() {
                     p.halt();
@@ -170,66 +175,118 @@
 
                     //main screen
                     this.ui.style.cssText = `
-                        width: ${window.innerWidth/3*2+p.size}px;
-                        height:${window.innerHeight/3*2+p.size}px;
+                        width: ${(window.innerWidth / 3) * 2 + p.size}px;
+                        height:${(window.innerHeight / 3) * 2 + p.size}px;
                         background: rgba(0,0,0,0);
                         border:1px solid black;
                         color: black;
                         position: absolute;
-                        top: ${p.posY-window.innerHeight/3}px;
-                        left: ${p.posX-window.innerWidth/3}px;
+                        top: ${p.posY - window.innerHeight / 3}px;
+                        left: ${p.posX - window.innerWidth / 3}px;
                     `;
 
                     //paused text
                     this.pausedText.style.cssText = `
                         width: ${100}%;
                         height:${100}px;
-                        font-size: 100px;
+                        font-size: ${parseFloat(this.ui.style.height) / 10}px;
                         text-align: center;
+                        color: rgb(0, 0, 230);
                         background: rgba(255,0,0,00);
                         border:0px solid black;
                         position: absolute;
-                        top: ${parseFloat(this.ui.style.height)/5.5}px;
+                        top: ${parseFloat(this.ui.style.height) / 4}px;
                         left: 0px;
-                    `
-                    this.pausedText.innerHTML = "PAUSED"
-                    this.ui.append(this.pausedText)
+                        z-index: 0;
+                    `;
+                    this.pausedText.innerHTML = "PAUSED";
+                    this.ui.append(this.pausedText);
 
                     //leave button
                     this.leave.style.cssText = `
-                        width: ${parseFloat(this.ui.style.width)/2.5}px;
-                        height:${parseFloat(this.ui.style.height)/2.5}px;
+                        width: ${parseFloat(this.ui.style.width) / 2.5}px;
+                        height:${parseFloat(this.ui.style.height) / 2.5}px;
                         background: rgba(0,0,0,0);
                         border:1px solid black;
                         position: absolute;
                         top: 0px;
                         left: 0px;
-                        z-index: 2;
+                        z-index: 3;
                         `;
-                    this.ui.append(this.leave)
+                    this.ui.append(this.leave);
 
                     //return button
                     this.return.style.cssText = `
-                        width: ${parseFloat(this.ui.style.width)/2.5}px;
-                        height:${parseFloat(this.ui.style.height)/2.5}px;
+                        height:${parseFloat(this.ui.style.height) / 5}px;
+                        width: ${
+                            (parseFloat(this.ui.style.height) / 5) * 2.5
+                        }px;
+                        font-size: ${parseFloat(this.ui.style.height) / 14}px;
+                        text-align: center;
+                        color: rgb(255, 204, 153);
                         background: rgba(0,0,0,0);
-                        border:1px solid black;
+                        background: url("./Assets/resume.png") no-repeat;
+                        background-size: contain;
+                        border: 0px solid black;
                         position: absolute;
                         top: 0px;
                         right: 0px;
-                        z-index: 2;
+                        z-index: 1;s
                         cursor: pointer;
                         `;
-                    this.return.onclick = function () {
-                        this.return();
-                    }
-                    this.ui.append(this.return)
+                    this.return.style.lineHeight = `${parseFloat(
+                        this.return.style.height
+                    )}px`;
+                    this.return.innerHTML = "RESUME";
 
+                    this.return.onmouseover = () => {
+                        this.zoomIn(this.return);
+                    };
+                    this.return.onmouseout = () => {
+                        this.zoomOut(this.return);
+                    };
+                    this.return.onclick = () => {
+                        this.resume();
+                    };
+                    this.ui.append(this.return);
 
                     document.querySelector("body").append(this.ui);
                 }
-                return() {
 
+                resume() {
+                    this.ui.style.display = "none";
+                    enablePlayerControl = true;
+                }
+
+                zoomIn(element) {
+                    clearInterval(this.zoomId);
+                    let zoomSpeed = this.zoomSpeed;
+                    let maxZoom = this.maxZoom;
+                    let currentZoom = this.currentZoom;
+                    this.zoomId = setInterval(function () {
+                        element.style.transform = `scale(${
+                            currentZoom + zoomSpeed
+                        })`;
+                        if (currentZoom < maxZoom) {
+                            currentZoom += zoomSpeed; //zoom in
+                        }
+                    }, 10);
+                }
+
+                zoomOut(element) {
+                    clearInterval(this.zoomId);
+                    let zoomSpeed = this.zoomSpeed;
+                    let maxZoom = this.currentZoom;
+                    let currentZoom = this.maxZoom;
+
+                    this.zoomId = setInterval(function () {
+                        element.style.transform = `scale(${
+                            currentZoom - zoomSpeed
+                        })`;
+                        if (currentZoom > maxZoom) {
+                            currentZoom -= zoomSpeed; //zoom in
+                        }
+                    }, 10);
                 }
             }
             var ow = new OverWorld(defaultWorldSize);
@@ -266,6 +323,7 @@
             ////////////////////// TODO //////////////////////
             //popup
             //gui - esc
+            //popupitems https://www.w3schools.com/howto/howto_js_animate.asp
         </script>
     </body>
 </html>
