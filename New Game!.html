@@ -264,11 +264,11 @@
                     let maxZoom = this.maxZoom;
                     let currentZoom = this.currentZoom;
                     this.zoomId = setInterval(function () {
-                        element.style.transform = `scale(${
+                        element.style.transform = `rotate(${currentZoom}deg) scale(${
                             currentZoom + zoomSpeed
-                        })`;
+                        })`;//zoom in
                         if (currentZoom < maxZoom) {
-                            currentZoom += zoomSpeed; //zoom in
+                            currentZoom += zoomSpeed; 
                         }
                     }, 10);
                 }
