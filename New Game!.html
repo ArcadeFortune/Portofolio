@@ -23,7 +23,9 @@
             class Player {
                 constructor(posX, posY, size, speed, map) {
                     this.ctx = map.getContext("2d");
-                    this.ctx.fillStyle = "blue";
+                    this.image = new Image();                    
+                    this.image.src = "./Assets/resume.png";
+                    
 
                     this.speed = speed;
                     this.size = size;
@@ -76,14 +78,14 @@
                 }
 
                 placeNow() {
-                    this.ctx.fillRect(
+                    this.ctx.drawImage(
+                        this.image,
                         this.posX,
                         this.posY,
                         this.size,
                         this.size
                     );
                 }
-
                 remove() {
                     this.ctx.clearRect(
                         this.posX - 1,
